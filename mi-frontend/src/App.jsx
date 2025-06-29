@@ -1,39 +1,58 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "./App.css";
-import Book from "./components/Book";
-
-function Home() {
-  return <h1 className="text-2xl font-bold">Bienvenido a la Biblioteca</h1>;
-}
-
-function NotFound() {
-  return <h1 className="text-2xl font-bold text-red-500">Página no encontrada</h1>;
-}
+import { useState } from 'react';
+import { useApp } from './context/AppContext';
+import Login from './components/auth/Login';
+import Register from './components/users/Register';
+import Header from './components/common/Header';
+import Sidebar from './components/common/Sidebar';
+import Dashboard from './components/dashboard/Dashboard';
+import BookManagement from './components/books/BookManagement';
+import LoanManagement from './components/loans/LoanManagement';
+import AuthorManagement from './components/authors/AuthorManagement';
+import CategoryManagement from './components/categories/CategoryManagement';
+import UserManagement from './components/users/UserManagement';
 
 function App() {
+  const { state } = useApp();
+  const [showRegister, setShowRegister] = useState(false);
+
+  if (!state.user) {
+    if (showRegister) {
+      return <Register goToLogin={() => setShowRegister(false)} />;
+    }
+    return <Login goToRegister={() => setShowRegister(true)} />;
+  }
+
+  const renderCurrentView = () => {
+    switch (state.currentView) {
+      case 'dashboard':
+        return <Dashboard />;
+      case 'books':
+        return <BookManagement />;
+      case 'loans':
+        return <LoanManagement />;
+      case 'authors':
+        return <AuthorManagement />;
+      case 'categories':
+        return <CategoryManagement />;
+      case 'users':
+        return <UserManagement />;
+      default:
+        return <Dashboard />;
+    }
+  };
+
   return (
-    <Router>
-      <div>
-        <nav className="bg-gray-800 text-white p-4">
-          <ul className="flex space-x-4">
-            <li>
-              <a href="/" className="hover:underline">Inicio</a>
-            </li>
-            <li>
-              <a href="/books" className="hover:underline">Libros</a>
-            </li>
-          </ul>
-        </nav>
-        <div className="p-4">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/books" element={<Book />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+    <div className="min-h-screen bg-slate-50">
+      <div className="flex">
+        <Sidebar />
+        <div className="flex-1 lg:ml-64">
+          <Header />
+          <main className="p-6">
+            {renderCurrentView()}
+          </main>
         </div>
       </div>
-    </Router>
+    </div>
   );
 }
 

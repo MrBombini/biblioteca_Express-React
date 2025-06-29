@@ -7,7 +7,7 @@ exports.getAll = async (req, res) => {
     res.json(prestamos);
   } catch (error) {
     console.error('Error al obtener préstamos:', error);
-    res.status(500).json({ error: 'Error al obtener los préstamos.' });
+    // res.status(500).json({ error: 'Error al obtener los préstamos.' });
   }
 };
 
